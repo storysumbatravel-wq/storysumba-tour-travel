@@ -1,103 +1,221 @@
+// src/app/page.tsx
+
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import Image from "next/image";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plane, Crown, ShieldCheck, Star } from "lucide-react";
+import { prisma } from "@/lib/db";
 
-export default function Home() {
+export default async function HomePage() {
+  const featuredPackages = await prisma.package.findMany({
+    where: { isHighlighted: true },
+    orderBy: { createdAt: "desc" },
+    take: 3,
+  });
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
+      {/* ================= HERO ================= */}
+      <section className="relative w-full h-[95vh] flex items-center justify-center overflow-hidden">
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
+          src="/images/hero1.jpg"
+          alt="Luxury travel destination"
+          fill
           priority
+          className="object-cover scale-105"
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        <div className="absolute inset-0 bg-linear-to-b from-black/70 via-black/50 to-black/80" />
+
+        <div className="relative z-10 text-center text-white px-6 space-y-8 max-w-4xl">
+          <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight leading-tight">
+            Curated Luxury <br /> Travel Experiences
+          </h1>
+
+          <p className="text-lg md:text-xl text-white/80 leading-relaxed max-w-2xl mx-auto">
+            Exclusive journeys crafted with elegance, comfort, and unforgettable
+            moments.
+          </p>
+
+          <div className="flex justify-center gap-6 pt-6 flex-wrap">
+            <Button
+              size="lg"
+              className="bg-primary hover:bg-primary/90 text-white px-10 py-6 text-lg rounded-full shadow-lg"
+              asChild
+            >
+              <Link href="/packages">Explore Packages</Link>
+            </Button>
+
+            {/* <Button
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-black px-10 py-6 text-lg rounded-full"
+              asChild
+            >
+              <Link href="/contact">Contact Us</Link>
+            </Button> */}
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </section>
+
+      {/* ================= ABOUT ================= */}
+      <section className="py-28 px-6 md:px-16 bg-muted/30">
+        <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-20 items-center">
+          <div className="space-y-6">
+            <h2 className="font-serif text-4xl md:text-5xl font-bold leading-tight">
+              Crafted For Discerning Travelers
+            </h2>
+
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              We specialize in premium travel experiences, delivering
+              personalized adventures across the world. Every journey is
+              thoughtfully curated to reflect sophistication and comfort.
+            </p>
+
+            <Button className="rounded-full px-8 py-5 shadow-md" asChild>
+              <Link href="/about">Discover Our Story</Link>
+            </Button>
+          </div>
+
+          <div className="relative aspect-4/3 rounded-3xl overflow-hidden shadow-2xl">
+            <Image
+              src="/images/about-1.jpg"
+              alt="Beautiful beach"
+              fill
+              className="object-cover hover:scale-105 transition duration-700"
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ================= FEATURED ================= */}
+      <section className="py-28 px-6 md:px-16">
+        <div className="max-w-6xl mx-auto text-center">
+          <h2 className="font-serif text-4xl md:text-5xl font-bold mb-6">
+            Featured Experiences
+          </h2>
+
+          <p className="text-muted-foreground mb-16 text-lg">
+            Handpicked luxury destinations crafted for extraordinary journeys.
+          </p>
+
+          {featuredPackages.length === 0 ? (
+            <p className="text-muted-foreground">
+              No featured packages available yet.
+            </p>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-12">
+              {featuredPackages.map((pkg) => (
+                <Card
+                  key={pkg.id}
+                  className="group overflow-hidden border-none shadow-lg hover:shadow-2xl transition duration-500 rounded-3xl bg-white"
+                >
+                  <div className="relative aspect-4/3 overflow-hidden">
+                    <Image
+                      src={pkg.imageUrl || "/images/placeholder.jpg"}
+                      alt={pkg.title}
+                      fill
+                      className="object-cover group-hover:scale-110 transition duration-700"
+                    />
+
+                    <span className="absolute top-4 left-4 bg-primary text-white px-4 py-1 text-xs rounded-full shadow">
+                      Featured
+                    </span>
+                  </div>
+
+                  <CardContent className="p-8 space-y-4">
+                    <h3 className="text-2xl font-semibold">{pkg.title}</h3>
+
+                    <p className="text-muted-foreground line-clamp-2">
+                      {pkg.description}
+                    </p>
+
+                    <Button
+                      variant="link"
+                      className="p-0 text-primary font-semibold"
+                      asChild
+                    >
+                      <Link href={`/packages/${pkg.id}`}>View Details →</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ================= WHY CHOOSE US ================= */}
+      <section className="py-28 px-6 md:px-16 bg-muted/30">
+        <div className="max-w-6xl mx-auto text-center">
+          <h2 className="font-serif text-4xl md:text-5xl font-bold mb-16">
+            Why Travel With Us
+          </h2>
+
+          <div className="grid md:grid-cols-4 gap-10">
+            {[Crown, Plane, ShieldCheck, Star].map((Icon, i) => (
+              <div
+                key={i}
+                className="bg-white rounded-2xl p-8 shadow-md hover:shadow-xl transition space-y-4"
+              >
+                <Icon className="mx-auto w-10 h-10 text-primary" />
+                <h4 className="text-xl font-semibold">
+                  {
+                    [
+                      "Premium Service",
+                      "Exclusive Destinations",
+                      "Trusted & Secure",
+                      "5-Star Experience",
+                    ][i]
+                  }
+                </h4>
+                <p className="text-muted-foreground text-sm">
+                  {
+                    [
+                      "Personalized attention with refined standards.",
+                      "Access to rare and extraordinary destinations.",
+                      "Safe journeys with expert travel handling.",
+                      "Rated excellence by our valued travelers.",
+                    ][i]
+                  }
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ================= CTA ================= */}
+      <section className="relative py-36 px-6 text-center text-white overflow-hidden">
+        <Image
+          src="/images/hero2.jpg"
+          alt="Luxury background"
+          fill
+          className="object-cover scale-105"
+        />
+
+        <div className="absolute inset-0 bg-black/70 backdrop-blur-[2px]" />
+
+        <div className="relative z-10 max-w-4xl mx-auto space-y-6">
+          <h2 className="font-serif text-4xl md:text-5xl font-bold">
+            Ready For Your Next Journey?
+          </h2>
+
+          <p className="text-lg text-white/80">
+            Let us design a seamless luxury experience tailored exclusively for
+            you.
+          </p>
+
+          <Button
+            size="lg"
+            className="bg-white text-black hover:bg-white/90 px-12 py-6 rounded-full text-lg shadow-xl"
+            asChild
+          >
+            <Link href="/contact">Start Planning</Link>
+          </Button>
+        </div>
+      </section>
     </div>
   );
 }

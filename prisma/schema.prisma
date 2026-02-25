@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String @id @default(uuid())
+  email    String @unique
+  password String
+  name     String
+  role     String @default("ADMIN")
+}
+
+model Package {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  description String   @db.Text
+  duration    Int
+  durationText String?
+  imageUrl    String
+  itinerary   String?  @db.Text
+  include     String?  @db.Text
+  exclude     String?  @db.Text
+  isHighlighted Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  options     PackageOption[]
+  trips       TripBooking[]
+}
+
+model PackageOption {
+  id            String   @id @default(uuid())
+  pax           Int
+  pricePerPax   Int
+  totalCost     Int
+
+  packageId     String
+  package       Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@unique([packageId, pax]) // tidak boleh pax sama dalam 1 package
+}
+
+model Blog {
+  id        String   @id @default(uuid())
+  title     String
+  content   String   @db.Text
+  imageUrl  String
+  author    String
+  createdAt DateTime @default(now())
+}
+
+model Car {
+  id           String @id @default(uuid())
+  name         String
+  pricePerDay  Int
+  image        String?
+  rentBookings RentBooking[]
+}
+
+model TripBooking {
+  id            String   @id @default(uuid())
+  customerName  String
+  phone         String
+  startDate     DateTime
+  pax           Int
+  pricePerPax   Int      // snapshot
+  totalCost     Int      // snapshot
+  totalAmount   Int      // pax × pricePerPax
+  status        String   @default("PENDING")
+  createdAt     DateTime @default(now())
+
+  packageId     String
+  package       Package  @relation(fields: [packageId], references: [id])
+}
+
+model RentBooking {
+  id            String   @id @default(uuid())
+  customerName  String
+  phone         String
+  startDate     DateTime
+  duration      Int
+  totalAmount   Int
+  status        String   @default("PENDING")
+  invoiceNumber String?  @unique
+  createdAt     DateTime @default(now())
+
+  carId         String
+  car           Car      @relation(fields: [carId], references: [id])
+}

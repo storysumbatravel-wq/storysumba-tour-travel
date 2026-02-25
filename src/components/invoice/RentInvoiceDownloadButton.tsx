@@ -1,0 +1,54 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { generateRentCarInvoice } from "@/lib/pdf";
+import { useState } from "react";
+
+interface RentInvoiceBooking {
+  id: string;
+  customerName: string;
+  phone: string;
+  startDate: Date | string;
+  duration: number;
+  totalAmount: number;
+  status: string;
+  createdAt: Date | string;
+  invoiceNumber?: string | null;
+  car: {
+    name: string;
+    pricePerDay: number;
+  };
+}
+
+interface Props {
+  booking: RentInvoiceBooking;
+}
+
+export default function RentInvoiceDownloadButton({ booking }: Props) {
+  const [loading, setLoading] = useState(false);
+
+  const handleDownload = async () => {
+    setLoading(true);
+
+    const res = await fetch(`/api/rents/${booking.id}/generate-invoice`, {
+      method: "POST",
+    });
+
+    const updated = await res.json();
+
+    const doc = generateRentCarInvoice(updated);
+    doc.save(`Invoice-${updated.invoiceNumber}.pdf`);
+
+    setLoading(false);
+  };
+
+  return (
+    <Button
+      onClick={handleDownload}
+      disabled={loading}
+      className="bg-amber-500 hover:bg-amber-600 text-white"
+    >
+      {loading ? "Processing..." : "Download PDF"}
+    </Button>
+  );
+}
