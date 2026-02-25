@@ -1,4 +1,3 @@
-import NavbarPublic from "@/components/NavbarPublic";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -27,8 +26,6 @@ export default async function PackageDetailPage({
 
   return (
     <div className="min-h-screen bg-linear-to-b from-slate-50 to-white">
-      <NavbarPublic />
-
       {/* HERO PREMIUM */}
       <div className="relative h-[55vh] w-full">
         <Image

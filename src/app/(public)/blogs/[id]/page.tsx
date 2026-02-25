@@ -1,4 +1,3 @@
-import NavbarPublic from "@/components/NavbarPublic";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -7,18 +6,19 @@ import Link from "next/link";
 export default async function BlogDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  // ✅ Next 15: params harus di-await
+  const { id } = await params;
+
   const blog = await prisma.blog.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!blog) return notFound();
 
   return (
     <div className="min-h-screen bg-white flex flex-col text-stone-800">
-      <NavbarPublic />
-
       {/* ================= HERO ================= */}
       <section className="relative w-full h-[60vh] md:h-[70vh] overflow-hidden">
         <Image

@@ -1,4 +1,3 @@
-import NavbarPublic from "@/components/NavbarPublic";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -9,8 +8,6 @@ import { Gem, ShieldCheck, Headphones } from "lucide-react";
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-white text-stone-800">
-      <NavbarPublic />
-
       {/* HERO SECTION */}
       <section className="relative h-[60vh] w-full flex items-center justify-center overflow-hidden">
         {/* Background Image */}

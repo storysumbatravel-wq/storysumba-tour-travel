@@ -1,4 +1,3 @@
-import NavbarPublic from "@/components/NavbarPublic";
 import { prisma } from "@/lib/db";
 import {
   Card,
@@ -17,8 +16,6 @@ export default async function BlogPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col text-stone-800">
-      <NavbarPublic />
-
       {/* ================= HERO ================= */}
       <section className="relative h-[55vh] flex items-center justify-center text-center overflow-hidden">
         <Image
