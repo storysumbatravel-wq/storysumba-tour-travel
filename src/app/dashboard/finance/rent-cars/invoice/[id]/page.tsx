@@ -3,18 +3,22 @@ import { notFound } from "next/navigation";
 import RentInvoiceDownloadButton from "@/components/invoice/RentInvoiceDownloadButton";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function RentCarInvoicePage({ params }: Props) {
+  // ✅ Next.js 15 wajib await params
+  const { id } = await params;
+
   const booking = await prisma.rentBooking.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { car: true },
   });
 
   if (!booking) return notFound();
 
-  const invoiceNumber = `RC-${booking.id.substring(0, 8).toUpperCase()}`;
+  const invoiceNumber =
+    booking.invoiceNumber ?? `RC-${booking.id.substring(0, 8).toUpperCase()}`;
 
   const rentalDate = new Date(booking.startDate).toLocaleDateString("id-ID", {
     day: "numeric",
@@ -22,7 +26,11 @@ export default async function RentCarInvoicePage({ params }: Props) {
     year: "numeric",
   });
 
-  const invoiceDate = new Date(booking.createdAt).toLocaleDateString("id-ID");
+  const invoiceDate = new Date(booking.createdAt).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <div className="max-w-5xl mx-auto p-8 bg-stone-50 min-h-screen">
@@ -119,10 +127,7 @@ export default async function RentCarInvoicePage({ params }: Props) {
 
           {/* ACTION BUTTONS */}
           <div className="flex justify-end gap-4 pt-6 border-t">
-            <RentInvoiceDownloadButton
-              booking={booking}
-              invoiceNumber={invoiceNumber}
-            />
+            <RentInvoiceDownloadButton booking={booking} />
           </div>
         </div>
       </div>

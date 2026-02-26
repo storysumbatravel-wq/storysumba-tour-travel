@@ -2,17 +2,22 @@ import { prisma } from "@/lib/db";
 import {
   Table,
   TableBody,
-  TableCell, // Tambahkan import ini
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import TripTableRow from "./TripTableRow"; // Import komponen client
+import TripTableRow from "./TripTableRow";
+import { Prisma } from "@prisma/client";
+
+type TripWithPackage = Prisma.TripBookingGetPayload<{
+  include: { package: true };
+}>;
 
 export default async function ListTrips() {
-  const trips = await prisma.tripBooking.findMany({
+  const trips: TripWithPackage[] = await prisma.tripBooking.findMany({
     include: { package: true },
     orderBy: { createdAt: "desc" },
   });
@@ -42,6 +47,7 @@ export default async function ListTrips() {
             {trips.map((trip) => (
               <TripTableRow key={trip.id} trip={trip} />
             ))}
+
             {trips.length === 0 && (
               <TableRow>
                 <TableCell

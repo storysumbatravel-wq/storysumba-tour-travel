@@ -6,13 +6,18 @@ type OptionInput = {
   price: number;
 };
 
+/* ======================
+   GET PACKAGE BY ID
+====================== */
 export async function GET(
   _req: Request,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await context.params;
+
     const pkg = await prisma.package.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         options: true, // ✅ sesuai schema
       },
@@ -32,11 +37,15 @@ export async function GET(
   }
 }
 
+/* ======================
+   UPDATE PACKAGE
+====================== */
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  context: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await context.params;
     const formData = await req.formData();
 
     const title = formData.get("title") as string;
@@ -55,6 +64,9 @@ export async function PUT(
 
     let imageUrl: string | undefined;
 
+    /* ======================
+       HANDLE IMAGE UPLOAD
+    ====================== */
     if (imageFile && imageFile.size > 0) {
       const bytes = await imageFile.arrayBuffer();
       const buffer = Buffer.from(bytes);
@@ -68,8 +80,11 @@ export async function PUT(
       imageUrl = `/uploads/${fileName}`;
     }
 
+    /* ======================
+       UPDATE DATABASE
+    ====================== */
     await prisma.package.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title,
         description,
@@ -80,7 +95,7 @@ export async function PUT(
         isHighlighted,
         ...(imageUrl && { imageUrl }),
 
-        // ✅ SESUAI SCHEMA: options bukan prices
+        // ✅ SESUAI SCHEMA: options
         options: {
           deleteMany: {},
           create: options.map((opt) => ({
@@ -97,6 +112,30 @@ export async function PUT(
     console.error("UPDATE ERROR:", error);
     return NextResponse.json(
       { error: "Failed to update package" },
+      { status: 500 },
+    );
+  }
+}
+
+/* ======================
+   DELETE PACKAGE
+====================== */
+export async function DELETE(
+  _req: Request,
+  context: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { id } = await context.params;
+
+    await prisma.package.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("DELETE ERROR:", error);
+    return NextResponse.json(
+      { error: "Failed to delete package" },
       { status: 500 },
     );
   }

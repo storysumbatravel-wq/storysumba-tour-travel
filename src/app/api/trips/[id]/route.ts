@@ -21,7 +21,7 @@ export async function GET(
 
     const result = {
       ...trip,
-      packageName: trip.packageName || trip.package?.title || "Custom Package",
+      packageName: trip.package?.title ?? "Custom Package",
       startDate: trip.startDate.toISOString(),
     };
 

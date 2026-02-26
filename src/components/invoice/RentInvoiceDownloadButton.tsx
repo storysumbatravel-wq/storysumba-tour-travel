@@ -28,18 +28,34 @@ export default function RentInvoiceDownloadButton({ booking }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleDownload = async () => {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    const res = await fetch(`/api/rents/${booking.id}/generate-invoice`, {
-      method: "POST",
-    });
+      // 🔥 Generate / confirm invoice number dari server
+      const res = await fetch(`/api/rents/${booking.id}/generate-invoice`, {
+        method: "POST",
+      });
 
-    const updated = await res.json();
+      if (!res.ok) {
+        throw new Error("Failed to generate invoice");
+      }
 
-    const doc = generateRentCarInvoice(updated);
-    doc.save(`Invoice-${updated.invoiceNumber}.pdf`);
+      const updated: RentInvoiceBooking = await res.json();
 
-    setLoading(false);
+      // Gunakan invoice number dari server atau fallback
+      const invoiceNumber =
+        updated.invoiceNumber ??
+        `RC-${updated.id.substring(0, 8).toUpperCase()}`;
+
+      // Generate PDF
+      const doc = generateRentCarInvoice(updated);
+      doc.save(`Invoice-${invoiceNumber}.pdf`);
+    } catch (error) {
+      console.error("DOWNLOAD INVOICE ERROR:", error);
+      alert("Failed to generate invoice. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

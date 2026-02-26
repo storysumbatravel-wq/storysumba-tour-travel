@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
+/* ======================
+   GET BLOG BY ID
+====================== */
 export async function GET(
   request: Request,
   context: { params: Promise<{ id: string }> },
@@ -18,56 +21,54 @@ export async function GET(
   return NextResponse.json(blog);
 }
 
+/* ======================
+   UPDATE BLOG
+====================== */
 export async function PUT(
-  req: Request,
-  { params }: { params: { id: string } },
+  request: Request,
+  context: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await context.params;
+  const body = await request.json();
+
   try {
-    const formData = await req.formData();
-
-    const title = formData.get("title") as string;
-    const author = formData.get("author") as string;
-    const content = formData.get("content") as string;
-    const image = formData.get("image") as File | null;
-
-    let imageUrl: string | undefined;
-
-    if (image && image.size > 0) {
-      // Simpan file sesuai sistem upload kamu
-      imageUrl = `/uploads/${image.name}`;
-    }
-
-    await prisma.blog.update({
-      where: { id: params.id },
+    const updated = await prisma.blog.update({
+      where: { id },
       data: {
-        title,
-        author,
-        content,
-        ...(imageUrl && { image: imageUrl }),
+        title: body.title,
+        content: body.content,
+        imageUrl: body.imageUrl,
+        author: body.author,
       },
     });
 
-    return NextResponse.json({ message: "Updated successfully" });
+    return NextResponse.json(updated);
   } catch {
     return NextResponse.json(
-      { error: "Failed to update blog" },
+      { message: "Failed to update blog" },
       { status: 500 },
     );
   }
 }
+
+/* ======================
+   DELETE BLOG
+====================== */
 export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } },
+  request: Request,
+  context: { params: Promise<{ id: string }> },
 ) {
+  const { id } = await context.params;
+
   try {
     await prisma.blog.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Deleted successfully" });
   } catch {
     return NextResponse.json(
-      { error: "Failed to delete blog" },
+      { message: "Failed to delete blog" },
       { status: 500 },
     );
   }
