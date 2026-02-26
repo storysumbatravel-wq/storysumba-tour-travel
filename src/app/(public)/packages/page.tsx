@@ -8,7 +8,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import NavbarPublic from "@/components/NavbarPublic";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -24,12 +23,10 @@ export default async function PublicPackages() {
 
   return (
     <div className="min-h-screen bg-white text-stone-800">
-      <NavbarPublic />
-
       {/* ================= HERO ================= */}
       <section className="relative h-[50vh] flex items-center justify-center text-center overflow-hidden">
         <Image
-          src="/images/hero-packages.jpg"
+          src="/images/placeholder.jpg"
           alt="Luxury travel packages"
           fill
           priority
